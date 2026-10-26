@@ -1,0 +1,6 @@
+{
+  "name": "Nexus Gamer Hub & AI Intelligence Lab",
+  "description": "Next-generation gaming intelligence platform with multi-screen collection management, high-thinking tactical analysis powered by Gemini 4 Argon, match analytics, and rig diagnostics.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
