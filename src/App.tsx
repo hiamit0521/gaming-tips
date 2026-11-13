@@ -1,16 +1,27 @@
-import React, { useState } from 'react';
+import React, { lazy, Suspense, useState } from 'react';
 import { ScreenId, GameItem, GameStatus, EsportsMatch } from './types';
 import { INITIAL_GAMES, INITIAL_MATCHES } from './data/mockData';
 import { Navbar } from './components/Navbar';
 import { ExploreScreen } from './screens/ExploreScreen';
-import { HighThinkingLab } from './screens/HighThinkingLab';
-import { VaultScreen } from './screens/VaultScreen';
-import { EsportsMatchesScreen } from './screens/EsportsMatchesScreen';
-import { RigDiagnosticScreen } from './screens/RigDiagnosticScreen';
-import { ProfileScreen } from './screens/ProfileScreen';
 import { GameDetailModal } from './components/GameDetailModal';
 import { AddGameModal } from './components/AddGameModal';
 import { BrainCircuit, ShieldCheck, Gamepad2, Sparkles, Heart } from 'lucide-react';
+
+const HighThinkingLab = lazy(() =>
+  import('./screens/HighThinkingLab').then(({ HighThinkingLab }) => ({ default: HighThinkingLab }))
+);
+const VaultScreen = lazy(() =>
+  import('./screens/VaultScreen').then(({ VaultScreen }) => ({ default: VaultScreen }))
+);
+const EsportsMatchesScreen = lazy(() =>
+  import('./screens/EsportsMatchesScreen').then(({ EsportsMatchesScreen }) => ({ default: EsportsMatchesScreen }))
+);
+const RigDiagnosticScreen = lazy(() =>
+  import('./screens/RigDiagnosticScreen').then(({ RigDiagnosticScreen }) => ({ default: RigDiagnosticScreen }))
+);
+const ProfileScreen = lazy(() =>
+  import('./screens/ProfileScreen').then(({ ProfileScreen }) => ({ default: ProfileScreen }))
+);
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<ScreenId>('explore');
@@ -107,59 +118,61 @@ export default function App() {
 
       {/* Main Content Area */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8">
-        {currentScreen === 'explore' && (
-          <ExploreScreen
-            games={displayedGames}
-            onSelectGame={setSelectedGameForModal}
-            onLaunchAI={handleLaunchAI}
-            onStatusChange={handleStatusChange}
-          />
-        )}
+        <Suspense fallback={<div className="py-12 text-center text-sm text-slate-400" role="status">Loading screen...</div>}>
+          {currentScreen === 'explore' && (
+            <ExploreScreen
+              games={displayedGames}
+              onSelectGame={setSelectedGameForModal}
+              onLaunchAI={handleLaunchAI}
+              onStatusChange={handleStatusChange}
+            />
+          )}
 
-        {currentScreen === 'ai-lab' && (
-          <HighThinkingLab
-            games={games}
-            activeGame={aiTargetGame}
-            initialPrompt={aiCustomPrompt}
-            onClearActiveGame={() => {
-              setAiTargetGame(null);
-              setAiCustomPrompt(undefined);
-            }}
-          />
-        )}
+          {currentScreen === 'ai-lab' && (
+            <HighThinkingLab
+              games={games}
+              activeGame={aiTargetGame}
+              initialPrompt={aiCustomPrompt}
+              onClearActiveGame={() => {
+                setAiTargetGame(null);
+                setAiCustomPrompt(undefined);
+              }}
+            />
+          )}
 
-        {currentScreen === 'vault' && (
-          <VaultScreen
-            games={displayedGames}
-            onSelectGame={setSelectedGameForModal}
-            onLaunchAI={handleLaunchAI}
-            onUpdateGameHours={handleUpdateGameHours}
-            onStatusChange={handleStatusChange}
-            onDeleteGame={handleDeleteGame}
-            onOpenAddModal={() => setIsAddModalOpen(true)}
-          />
-        )}
+          {currentScreen === 'vault' && (
+            <VaultScreen
+              games={displayedGames}
+              onSelectGame={setSelectedGameForModal}
+              onLaunchAI={handleLaunchAI}
+              onUpdateGameHours={handleUpdateGameHours}
+              onStatusChange={handleStatusChange}
+              onDeleteGame={handleDeleteGame}
+              onOpenAddModal={() => setIsAddModalOpen(true)}
+            />
+          )}
 
-        {currentScreen === 'matches' && (
-          <EsportsMatchesScreen
-            matches={INITIAL_MATCHES}
-            onLaunchAIWithMatch={handleLaunchAIWithMatch}
-          />
-        )}
+          {currentScreen === 'matches' && (
+            <EsportsMatchesScreen
+              matches={INITIAL_MATCHES}
+              onLaunchAIWithMatch={handleLaunchAIWithMatch}
+            />
+          )}
 
-        {currentScreen === 'rig' && (
-          <RigDiagnosticScreen
-            onLaunchAIWithRig={handleLaunchAIWithRig}
-          />
-        )}
+          {currentScreen === 'rig' && (
+            <RigDiagnosticScreen
+              onLaunchAIWithRig={handleLaunchAIWithRig}
+            />
+          )}
 
-        {currentScreen === 'profile' && (
-          <ProfileScreen
-            games={games}
-            onSelectGame={setSelectedGameForModal}
-            onLaunchAI={handleLaunchAI}
-          />
-        )}
+          {currentScreen === 'profile' && (
+            <ProfileScreen
+              games={games}
+              onSelectGame={setSelectedGameForModal}
+              onLaunchAI={handleLaunchAI}
+            />
+          )}
+        </Suspense>
       </main>
 
       {/* Modals */}
